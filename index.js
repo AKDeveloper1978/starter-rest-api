@@ -1,25 +1,22 @@
-const express = require('express')
+import { router as bikesRouter } from './router.js';
+import express from 'express';
+import { generateAccessToken } from './auth.js';
+
 const app = express()
-const db = require('@cyclic.sh/dynamodb')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// #############################################################################
-// This configures static hosting for files in /public that have the extensions
-// listed in the array.
-// var options = {
-//   dotfiles: 'ignore',
-//   etag: false,
-//   extensions: ['htm', 'html','css','js','ico','jpg','jpeg','png','svg'],
-//   index: ['index.html'],
-//   maxAge: '1m',
-//   redirect: false
-// }
-// app.use(express.static('public', options))
-// #############################################################################
+app.post("/api/user", (req, res) => {
+  const username = req.body.username;
 
-// Create or Update an item
+  const token = generateAccessToken({ username });
+  res.send({ token });
+});
+
+app.use('/bikes', bikesRouter);
+
+/*
 app.post('/:col/:key', async (req, res) => {
   console.log(req.body)
 
@@ -64,6 +61,8 @@ app.get('/:col', async (req, res) => {
 app.use('*', (req, res) => {
   res.json({ msg: 'no route handler found' }).end()
 })
+
+*/
 
 // Start the server
 const port = process.env.PORT || 3000
